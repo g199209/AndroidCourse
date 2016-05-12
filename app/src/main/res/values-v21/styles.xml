@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 让弹出菜单不会遮挡ActionBar -->
+    <style name="OverflowMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
+        <!-- API 21 and above -->
+        <item name="android:overlapAnchor">false</item>
+    </style>
+
+</resources>
