@@ -3,4 +3,9 @@
     <string name="app_name">高明飞</string>
     <string name="Setting">设置</string>
     <string name="Upload">上传</string>
+    <string name="PkgName">包名 ： </string>
+    <string name="InputHint">有什么新鲜事，告诉我们吧~</string>
+    <string name="remainder">剩余字数 ： </string>
+    <string name="Clear">清除</string>
+    <string name="Publish">发布</string>
 </resources>

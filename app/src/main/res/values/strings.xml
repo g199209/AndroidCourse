@@ -2,4 +2,9 @@
     <string name="app_name">Mingfei Gao</string>
     <string name="Setting">Setting</string>
     <string name="Upload">Upload</string>
+    <string name="PkgName">Package Name :</string>
+    <string name="InputHint">Tell Other People Something New~</string>
+    <string name="remainder">Remainder :</string>
+    <string name="Clear">Clear</string>
+    <string name="Publish">Publish</string>
 </resources>

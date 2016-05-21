@@ -39,12 +39,6 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.main_menu_settings) {
-            Snackbar.make(SnackbarContainer, "Test", Snackbar.LENGTH_LONG).show();
-            return true;
-        }
-
         if (id == R.id.main_menu_upload) {
             new SubmitProgram().doSubmit(this);
             Snackbar.make(SnackbarContainer, "Submit Program!", Snackbar.LENGTH_LONG).show();
