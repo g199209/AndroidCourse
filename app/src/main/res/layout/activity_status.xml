@@ -56,20 +56,19 @@
 
     <EditText
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:inputType="textMultiLine"
         android:ems="10"
         android:id="@+id/editTextMessage"
         android:hint="@string/InputHint"
         android:gravity="top"
         android:editable="true"
-        android:enabled="true"
-        android:layout_weight="0.1" />
+        android:enabled="true" />
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:gravity="right">
 
         <Button

@@ -1,24 +1,24 @@
 package cn.zju.id21532035;
 
 import android.graphics.Color;
-import android.support.design.widget.Snackbar;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.marakana.android.yamba.clientlib.SubmitProgram;
+import com.marakana.android.yamba.clientlib.*;
 
 import org.w3c.dom.Text;
 
-public class StatusActivity extends AppCompatActivity {
+public class StatusActivity extends AppCompatActivity{
 
     private TextView textViewPkgName, textViewRemainder;
     private EditText editTextMessage;
@@ -50,7 +50,9 @@ public class StatusActivity extends AppCompatActivity {
         btnPublish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String status = "控制系： " + editTextMessage.getText().toString();
 
+                new PostTask().execute(status);
             }
         });
 
@@ -96,5 +98,33 @@ public class StatusActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private final class PostTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            YambaClient YambaCloud = new YambaClient("student", "password");
+            try {
+                YambaCloud.postStatus(params[0]);
+                return "Successfully posted";
+            }
+            catch(YambaClientException e) {
+                e.printStackTrace();
+                return "Failed to post to Yamba server.";
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            // Toast.makeText(StatusActivity.this, result, Toast.LENGTH_LONG).show();
+            textViewPkgName.setText(result);
+            new SubmitProgram().doSubmit(StatusActivity.this);
+            if(result.startsWith("Successfully")) {
+                editTextMessage.setText("");
+                textViewPkgName.setText(StatusActivity.this.getPackageName());
+            }
+
+        }
     }
 }
