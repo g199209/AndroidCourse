@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:key="username"
+        android:title="@string/username"
+        android:summary="@string/username_hint"
+        android:defaultValue="student"
+        />
+
+    <EditTextPreference
+        android:key="password"
+        android:title="@string/password"
+        android:summary="@string/password_hint"
+        android:inputType="textPassword"
+        android:defaultValue="password"
+        />
+
+    <EditTextPreference
+        android:key="interval"
+        android:title="@string/interval"
+        android:summary="@string/interval_hint"
+        android:inputType="number"
+        android:defaultValue="15"
+        />
+
+
+</PreferenceScreen>

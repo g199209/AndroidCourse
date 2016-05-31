@@ -1,7 +1,13 @@
 package cn.zju.id21532035;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -19,7 +25,7 @@ import com.marakana.android.yamba.clientlib.*;
 import org.w3c.dom.Text;
 
 public class StatusActivity extends AppCompatActivity{
-
+    CoordinatorLayout SnackbarContainer;
     private TextView textViewPkgName, textViewRemainder;
     private EditText editTextMessage;
     private Button btnClear, btnPublish;
@@ -28,8 +34,11 @@ public class StatusActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_status);
+        // Return menu button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Find View
+        SnackbarContainer = (CoordinatorLayout)findViewById(R.id.SnackbarContainer);
         textViewPkgName = (TextView)findViewById(R.id.textViewPkgName);
         textViewRemainder = (TextView)findViewById(R.id.textViewRemainder);
         editTextMessage = (EditText)findViewById(R.id.editTextMessage);
@@ -43,6 +52,7 @@ public class StatusActivity extends AppCompatActivity{
         btnClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Snackbar.make(SnackbarContainer, "aaa", Snackbar.LENGTH_LONG).show();
                 editTextMessage.setText("");
             }
         });
@@ -50,7 +60,7 @@ public class StatusActivity extends AppCompatActivity{
         btnPublish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String status = "控制系： " + editTextMessage.getText().toString();
+                String status = "<" + getString(R.string.app_name) + ">控制系： " + editTextMessage.getText().toString();
 
                 new PostTask().execute(status);
             }
@@ -84,7 +94,7 @@ public class StatusActivity extends AppCompatActivity{
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_statue, menu);
         return true;
     }
 
@@ -92,18 +102,30 @@ public class StatusActivity extends AppCompatActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.main_menu_upload) {
-            new SubmitProgram().doSubmit(this);
-            return true;
+        switch (id) {
+            case R.id.action_submit:
+                new SubmitProgram().doSubmit(this);
+                return true;
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private final class PostTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... params) {
-            YambaClient YambaCloud = new YambaClient("student", "password");
+            SharedPreferences prefs =
+                    PreferenceManager.getDefaultSharedPreferences(StatusActivity.this);
+            String username = prefs.getString("username","");
+            String password = prefs.getString("password","");
+            if(username == "" || password == "") {
+                startActivity(new Intent(StatusActivity.this, SettingsActivity.class));
+                return "Please update your username and password";
+            }
+            YambaClient YambaCloud = new YambaClient(username, password);
             try {
                 YambaCloud.postStatus(params[0]);
                 return "Successfully posted";
@@ -117,9 +139,7 @@ public class StatusActivity extends AppCompatActivity{
         @Override
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            // Toast.makeText(StatusActivity.this, result, Toast.LENGTH_LONG).show();
-            textViewPkgName.setText(result);
-            new SubmitProgram().doSubmit(StatusActivity.this);
+            Snackbar.make(SnackbarContainer, result, Snackbar.LENGTH_LONG).show();
             if(result.startsWith("Successfully")) {
                 editTextMessage.setText("");
                 textViewPkgName.setText(StatusActivity.this.getPackageName());

@@ -8,4 +8,20 @@
     <string name="remainder">剩余字数 ： </string>
     <string name="Clear">清除</string>
     <string name="Publish">发布</string>
+    <string name="action_close">关闭</string>
+    <string name="action_submit">提交</string>
+    <string name="getFilesDir">getFilesDir</string>
+    <string name="getExternalStorageDirectoty">getExternalStorageDirectoty</string>
+    <string name="getExternalFilesDir">getExternalFilesDir</string>
+    <string name="StartService">启动服务</string>
+    <string name="StopService">停止服务</string>
+    <string name="title_activity_settings">设置</string>
+    <string name="title_activity_main">高明飞</string>
+    <string name="title_activity_status">发布</string>
+    <string name="username">用户名</string>
+    <string name="username_hint">请输入用户名</string>
+    <string name="password">密码</string>
+    <string name="password_hint">请输入密码</string>
+    <string name="interval">更新周期</string>
+    <string name="interval_hint">微博一览更新时间 (s)</string>
 </resources>

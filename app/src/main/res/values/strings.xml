@@ -7,4 +7,20 @@
     <string name="remainder">Remainder :</string>
     <string name="Clear">Clear</string>
     <string name="Publish">Publish</string>
+    <string name="action_close">Close</string>
+    <string name="action_submit">Submit</string>
+    <string name="getFilesDir">getFilesDir</string>
+    <string name="getExternalStorageDirectoty">getExternalStorageDirectoty</string>
+    <string name="getExternalFilesDir">getExternalFilesDir</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="StartService">Start Service</string>
+    <string name="StopService">Stop Service</string>
+    <string name="title_activity_main">Mingfei Gao</string>
+    <string name="title_activity_status">Publish</string>
+    <string name="username">User Name</string>
+    <string name="username_hint">Please enter your username</string>
+    <string name="password">Password</string>
+    <string name="password_hint">Please enter your password</string>
+    <string name="interval">Update Interval</string>
+    <string name="interval_hint">Weibo update interval (s)</string>
 </resources>
