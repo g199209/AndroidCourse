@@ -32,30 +32,19 @@
         android:layout_alignParentEnd="true"
         android:layout_gravity="right" />
 
-    <Button
-        android:layout_width="wrap_content"
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/getFilesDir"
-        android:id="@+id/button" />
+        android:id="@+id/scrollView"
+        android:layout_gravity="center_horizontal" >
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/getExternalStorageDirectoty"
-        android:id="@+id/button2" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/getExternalFilesDir"
-        android:id="@+id/button3" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/textView3"
-        android:layout_gravity="center_horizontal" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Large Text"
+            android:id="@+id/textView3" />
+    </ScrollView>
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/SnackbarContainer"

@@ -52,7 +52,6 @@ public class StatusActivity extends AppCompatActivity{
         btnClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(SnackbarContainer, "aaa", Snackbar.LENGTH_LONG).show();
                 editTextMessage.setText("");
             }
         });

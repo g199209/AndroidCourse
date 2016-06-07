@@ -1,13 +1,14 @@
 package cn.zju.id21532035;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatDelegate;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,32 +32,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         SnackbarContainer = (CoordinatorLayout)findViewById(R.id.SnackbarContainer);
-        btn1 = (Button)findViewById(R.id.button);
-        btn2 = (Button)findViewById(R.id.button2);
-        btn3 = (Button)findViewById(R.id.button3);
 
         tv1 = (TextView)findViewById(R.id.textView3);
 
-        btn1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                fileTestWrite(getFilesDir().getPath());
-            }
-        });
-
-        btn2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                fileTestWrite(Environment.getExternalStorageDirectory().getPath());
-            }
-        });
-
-        btn3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                fileTestWrite(getExternalFilesDir(null).getPath());
-            }
-        });
+        ContentResolver provider = getContentResolver();
+        Cursor cursor = provider.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                new String[]{"duration", "title", "artist"}, null, null, null);
+        String s = "";
+        while(cursor.moveToNext()) {
+            s += String.format("作者： %s\n曲名：%s\n时间：%s (ms)\n\n",
+                    cursor.getString(2),
+                    cursor.getString(1),
+                    cursor.getString(0));
+        }
+        tv1.setText(s);
     }
 
     @Override
@@ -88,8 +77,14 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_start_service:
+                Snackbar.make(SnackbarContainer, "Start Service!", Snackbar.LENGTH_LONG).show();
+                startService(new Intent(this, UpdateService.class));
+                return true;
 
             case R.id.action_stop_service:
+                Snackbar.make(SnackbarContainer, "Stop Service!", Snackbar.LENGTH_LONG).show();
+                stopService(new Intent(this, UpdateService.class));
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
