@@ -21,14 +21,18 @@
         android:id="@+id/action_start_service"
         />
 
-    <item
-        android:title="@string/StopService"
-        android:id="@+id/action_stop_service"
-        />
+    <!--<item-->
+        <!--android:title="@string/StopService"-->
+        <!--android:id="@+id/action_stop_service"-->
+        <!--/>-->
 
     <item
         android:title="@string/Setting"
         android:id="@+id/action_setting"
         />
 
+    <item
+        android:title="Clear DB"
+        android:id="@+id/action_cleardb"
+        />
 </menu>

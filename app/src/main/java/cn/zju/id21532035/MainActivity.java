@@ -3,16 +3,20 @@ package cn.zju.id21532035;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.Environment;
+import android.database.sqlite.SQLiteDatabase;
 import android.provider.MediaStore;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.marakana.android.yamba.clientlib.SubmitProgram;
@@ -23,8 +27,18 @@ import java.io.PrintWriter;
 
 public class MainActivity extends AppCompatActivity {
     CoordinatorLayout SnackbarContainer;
-    Button btn1, btn2, btn3;
-    TextView tv1;
+    TextView tvPkgName;
+    SQLiteDatabase db;
+    Cursor cursor;
+    DBHelper dbhlp;
+    SimpleCursorAdapter adapter;
+    ListView listStatus;
+    boolean serviceRunning = false;
+
+    private static final String[] FROM = {StatusConstract.Column.USER,
+        StatusConstract.Column.MESSAGE, StatusConstract.Column.CREATED_AT};
+
+    private static final int[] TO = {R.id.textUser, R.id.textMsg, R.id.textTime};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,26 +46,56 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         SnackbarContainer = (CoordinatorLayout)findViewById(R.id.SnackbarContainer);
+        listStatus = (ListView)findViewById(R.id.listStatus);
+        tvPkgName = (TextView)findViewById(R.id.textView);
 
-        tv1 = (TextView)findViewById(R.id.textView3);
+        tvPkgName.setText(this.getString(R.string.PkgName) + this.getPackageName());
 
-        ContentResolver provider = getContentResolver();
-        Cursor cursor = provider.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                new String[]{"duration", "title", "artist"}, null, null, null);
-        String s = "";
-        while(cursor.moveToNext()) {
-            s += String.format("作者： %s\n曲名：%s\n时间：%s (ms)\n\n",
-                    cursor.getString(2),
-                    cursor.getString(1),
-                    cursor.getString(0));
-        }
-        tv1.setText(s);
+        dbhlp = new DBHelper(this);
+        db = dbhlp.getReadableDatabase();
+        cursor = db.query(StatusConstract.TABLE, null, null, null, null, null,
+                StatusConstract.DEFAULT_SORT);
+        startManagingCursor(cursor);
+
+        adapter = new SimpleCursorAdapter(this, R.layout.row, cursor, FROM, TO);
+        adapter.setViewBinder(new TimeLineViewBinder());
+        listStatus.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        stopService(new Intent(this, UpdateService.class));
+        db.close();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onMenuOpened(int featureId, Menu menu) {
+        if(menu == null)
+            return true;
+
+        MenuItem toggleItem = menu.findItem(R.id.action_start_service);
+        if (serviceRunning) {
+            toggleItem.setTitle(R.string.StopService);
+            toggleItem.setIcon(android.R.drawable.ic_media_pause);
+        }
+        else {
+            toggleItem.setTitle(R.string.StartService);
+            toggleItem.setIcon(android.R.drawable.ic_media_play);
+        }
         return true;
     }
 
@@ -77,13 +121,25 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_start_service:
-                Snackbar.make(SnackbarContainer, "Start Service!", Snackbar.LENGTH_LONG).show();
-                startService(new Intent(this, UpdateService.class));
+                if (serviceRunning) {
+                    stopService(new Intent(this, UpdateService.class));
+                    Snackbar.make(SnackbarContainer, "Stop Service!", Snackbar.LENGTH_LONG).show();
+                    serviceRunning = false;
+                }
+                else {
+                    startService(new Intent(this, UpdateService.class));
+                    Snackbar.make(SnackbarContainer, "Start Service!", Snackbar.LENGTH_LONG).show();
+                    serviceRunning = true;
+                }
                 return true;
 
-            case R.id.action_stop_service:
-                Snackbar.make(SnackbarContainer, "Stop Service!", Snackbar.LENGTH_LONG).show();
-                stopService(new Intent(this, UpdateService.class));
+
+            case R.id.action_cleardb:
+                SQLiteDatabase dbw= dbhlp.getWritableDatabase();
+                dbw.delete(StatusConstract.TABLE, null, null);
+                cursor.requery();
+                adapter.notifyDataSetChanged();
+                Snackbar.make(SnackbarContainer, "All data is cleared", Snackbar.LENGTH_LONG).show();
                 return true;
 
             default:
@@ -91,17 +147,32 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void fileTestWrite(String dir){
-        String fn = dir + "/hello.txt";
-        tv1.setText(fn);
-        try {
-            PrintWriter o = new PrintWriter(new BufferedWriter(new FileWriter(fn)));
-            o.println("Hello!");
-            o.close();
-        }
-        catch(Exception e){
-            e.printStackTrace();
+    class TimeLineViewBinder implements SimpleCursorAdapter.ViewBinder {
+        @Override
+        public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
+            if (view.getId() != R.id.textTime)
+                return false;
+
+            long timestamp = cursor.getLong(columnIndex);
+
+            CharSequence relativeTime =
+                    DateUtils.getRelativeTimeSpanString(timestamp);
+            ((TextView)view).setText(relativeTime);
+            return true;
         }
     }
+
+//    private void fileTestWrite(String dir){
+//        String fn = dir + "/hello.txt";
+//        tv1.setText(fn);
+//        try {
+//            PrintWriter o = new PrintWriter(new BufferedWriter(new FileWriter(fn)));
+//            o.println("Hello!");
+//            o.close();
+//        }
+//        catch(Exception e){
+//            e.printStackTrace();
+//        }
+//    }
 
 }
