@@ -25,15 +25,13 @@
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/listStatus"
-        android:layout_weight="1" />
+        android:id="@+id/listStatus" />
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/SnackbarContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom"
-        android:layout_weight="1" />
+        android:layout_gravity="bottom" />
 </LinearLayout>
 
