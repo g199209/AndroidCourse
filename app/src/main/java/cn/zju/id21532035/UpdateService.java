@@ -19,7 +19,6 @@ import java.util.List;
 public class UpdateService extends Service {
     private static final String TAG = "UpdaterService";
     static long DELAY = 60000; // ms
-    public static boolean runFlag = false;
     private Updater myUpdater;
     private String username, password;
 
@@ -61,8 +60,8 @@ public class UpdateService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (!runFlag) {
-            this.runFlag = true;
+        if (!((MyAppliciation)getApplication()).serviceRunning) {
+            ((MyAppliciation)getApplication()).serviceRunning = true;
             this.myUpdater.start();
         }
         Log.d(TAG, "OnStarted");
@@ -73,7 +72,7 @@ public class UpdateService extends Service {
     public void onDestroy() {
         super.onDestroy();
 
-        this.runFlag = false;
+        ((MyAppliciation)getApplication()).serviceRunning = false;
         this.myUpdater.interrupt();
         this.myUpdater = null;
 
@@ -94,7 +93,7 @@ public class UpdateService extends Service {
         public void run() {
             DBHelper myDBHelper = new DBHelper(UpdateService.this);
 
-            while(runFlag) {
+            while(((MyAppliciation)getApplication()).serviceRunning) {
                 Log.d(TAG, "Running background thread" + DELAY / 1000);
                 SQLiteDatabase db = myDBHelper.getWritableDatabase();
 
@@ -129,13 +128,18 @@ public class UpdateService extends Service {
                             count ++;
                             Log.i(TAG, String.format("(%s)  %s",usr, msg));
                         }
+                    }
 
+                    if(count >= 0) {
+                        Intent bcast = new Intent(StatusConstract.NEW_STATUSES);
+                        bcast.putExtra("count", count);
+                        sendBroadcast(bcast);
                     }
 
                 }
                 catch (YambaClientException e) {
                     e.printStackTrace();
-                    runFlag = false;
+                    ((MyAppliciation)getApplication()).serviceRunning = false;
                 }
                 finally {
                     db.close();
@@ -146,7 +150,7 @@ public class UpdateService extends Service {
                 }
                 catch (InterruptedException e){
                     e.printStackTrace();
-                    runFlag = false;
+                    ((MyAppliciation)getApplication()).serviceRunning = false;
                 }
             }
         }
